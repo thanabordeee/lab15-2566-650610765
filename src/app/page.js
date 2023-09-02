@@ -44,7 +44,7 @@ const schema = z
     }),
     hasCoupon: z.boolean(),
     coupon: z.string(),
-    password: z.string(),
+    password: z.string().min(6,{message:"Password must contain at least 6 characters"}).max(12,{message:"Password must not exceed 12 characters"}),
     confirmPassword: z.string(),
   })
   .refine(
@@ -63,6 +63,11 @@ const schema = z
       message: "Invalid coupon code",
       path: ["coupon"],
     }
+  ).refine(
+    (data) =>{
+      if(data.password === data.confirmPassword)return true;
+      return false;
+    },{message:"Password does not match",path:["password"]}
   );
 
 export default function Home() {
@@ -89,7 +94,11 @@ export default function Home() {
 
     //TIP : get value of currently filled form with variable "form.values"
 
-    if (form.values.plan === "funrun") price = 500;
+    if (form.values.plan === "funrun" ) {if(form.values.hasCoupon == true){if(form.values.coupon ==="CMU2023") price = 350; else price =500} else price=500};
+    if (form.values.plan === "mini" ) {if(form.values.hasCoupon == true){if(form.values.coupon ==="CMU2023") price = 560; else price =800} else price=800};
+    if (form.values.plan === "half" ) {if(form.values.hasCoupon == true){if(form.values.coupon ==="CMU2023") price = 840; else price =1200} else price=1200};
+    if (form.values.plan === "full" ) {if(form.values.hasCoupon == true){if(form.values.coupon ==="CMU2023") price = 1050; else price =1500} else price=1500};
+
     //check the rest plans by yourself
     //TIP : check /src/app/libs/runningPlans.js
 
